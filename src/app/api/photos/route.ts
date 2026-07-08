@@ -1,9 +1,12 @@
 import { addPhoto, GuestNotFoundError, LimitReachedError } from '@/lib/photo-service'
+import { SignedUrlCache } from '@/lib/signed-url-cache'
 import { realPhotoDeps } from '@/lib/supabase-photo-deps'
 import { supabaseAdmin } from '@/lib/supabase-server'
 import { isValidGuestId, validateUpload } from '@/lib/validation'
 
 export const runtime = 'nodejs'
+
+const urlCache = new SignedUrlCache()
 
 export async function POST(req: Request) {
   const form = await req.formData().catch(() => null)
@@ -45,10 +48,20 @@ export async function GET() {
   if (rows.length === 0) return Response.json({ photos: [] })
 
   const paths = rows.flatMap((p) => [p.thumb_path, p.storage_path])
-  const { data: signed, error: signErr } = await sb.storage.from('photos').createSignedUrls(paths, 3600)
-  if (signErr) return Response.json({ error: 'sign_error' }, { status: 500 })
-
-  const urlByPath = new Map((signed ?? []).map((s) => [s.path, s.signedUrl]))
+  let urlByPath: Map<string, string>
+  try {
+    urlByPath = await urlCache.getUrls(paths, async (toSign) => {
+      const { data: signed, error: signErr } = await sb.storage.from('photos').createSignedUrls(toSign, 3600)
+      if (signErr) throw new Error(signErr.message)
+      const map = new Map<string, string>()
+      for (const s of signed ?? []) {
+        if (s.signedUrl) map.set(s.path ?? '', s.signedUrl)
+      }
+      return map
+    })
+  } catch {
+    return Response.json({ error: 'sign_error' }, { status: 500 })
+  }
   return Response.json({
     photos: rows.map((p) => ({
       id: p.id,
