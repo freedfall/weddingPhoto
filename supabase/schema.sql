@@ -1,10 +1,10 @@
-create table guests (
+create table if not exists guests (
   id uuid primary key default gen_random_uuid(),
   name text not null check (char_length(trim(name)) between 1 and 50),
   created_at timestamptz not null default now()
 );
 
-create table photos (
+create table if not exists photos (
   id uuid primary key default gen_random_uuid(),
   guest_id uuid not null references guests(id) on delete cascade,
   storage_path text not null,
@@ -12,7 +12,7 @@ create table photos (
   created_at timestamptz not null default now()
 );
 
-create index photos_guest_id_idx on photos (guest_id);
+create index if not exists photos_guest_id_idx on photos (guest_id);
 
 -- Доступ только через service role: RLS включён, политик нет.
 alter table guests enable row level security;
