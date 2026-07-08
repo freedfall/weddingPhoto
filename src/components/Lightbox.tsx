@@ -16,7 +16,7 @@ export default function Lightbox({ photos, index, onIndex, onClose }: Props) {
   return (
     <div className="fixed inset-0 z-50 flex flex-col bg-ink/95" onClick={onClose}>
       <div className="flex justify-end p-4">
-        <button aria-label="Закрыть" className="font-mono text-2xl text-paper">✕</button>
+        <button aria-label="Закрыть" className="font-mono text-2xl text-paper" onClick={onClose}>✕</button>
       </div>
       <div className="flex flex-1 items-center justify-between gap-2 px-2 pb-8" onClick={(e) => e.stopPropagation()}>
         <button
