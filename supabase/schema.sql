@@ -9,6 +9,8 @@ create table if not exists photos (
   guest_id uuid not null references guests(id) on delete cascade,
   storage_path text not null,
   thumb_path text not null,
+  width int,
+  height int,
   created_at timestamptz not null default now()
 );
 
@@ -21,7 +23,9 @@ alter table photos enable row level security;
 create or replace function claim_photo_slot(
   p_guest_id uuid,
   p_storage_path text,
-  p_thumb_path text
+  p_thumb_path text,
+  p_width int default null,
+  p_height int default null
 ) returns table (photo_id uuid, photos_used int)
 language plpgsql
 as $$
@@ -39,8 +43,8 @@ begin
     raise exception 'limit_reached';
   end if;
 
-  insert into photos (guest_id, storage_path, thumb_path)
-  values (p_guest_id, p_storage_path, p_thumb_path)
+  insert into photos (guest_id, storage_path, thumb_path, width, height)
+  values (p_guest_id, p_storage_path, p_thumb_path, p_width, p_height)
   returning id into v_id;
 
   return query select v_id, v_used + 1;

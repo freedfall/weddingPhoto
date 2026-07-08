@@ -9,7 +9,12 @@ export function realPhotoDeps(): PhotoDeps {
     newId: () => randomUUID(),
 
     async makeThumb(original) {
-      return sharp(original).rotate().resize({ width: 400 }).jpeg({ quality: 75 }).toBuffer()
+      const { data, info } = await sharp(original)
+        .rotate()
+        .resize({ width: 400 })
+        .jpeg({ quality: 75 })
+        .toBuffer({ resolveWithObject: true })
+      return { data, width: info.width, height: info.height }
     },
 
     async uploadFile(path, data, contentType) {
@@ -21,11 +26,13 @@ export function realPhotoDeps(): PhotoDeps {
       await sb.storage.from('photos').remove(paths)
     },
 
-    async claimSlot(guestId, storagePath, thumbPath) {
+    async claimSlot(guestId, storagePath, thumbPath, dims) {
       const { data, error } = await sb.rpc('claim_photo_slot', {
         p_guest_id: guestId,
         p_storage_path: storagePath,
         p_thumb_path: thumbPath,
+        p_width: dims.width,
+        p_height: dims.height,
       })
       if (error) {
         if (error.message.includes('limit_reached')) throw new LimitReachedError(error.message)

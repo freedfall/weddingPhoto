@@ -34,13 +34,15 @@ type PhotoRow = {
   storage_path: string
   thumb_path: string
   created_at: string
+  width: number | null
+  height: number | null
   guests: { name: string } | null
 }
 
 export async function GET() {
   const sb = supabaseAdmin()
   const { data, error } = await sb.from('photos')
-    .select('id, storage_path, thumb_path, created_at, guests(name)')
+    .select('id, storage_path, thumb_path, created_at, width, height, guests(name)')
     .order('created_at', { ascending: false })
   if (error) return Response.json({ error: 'db_error' }, { status: 500 })
 
@@ -67,6 +69,8 @@ export async function GET() {
       id: p.id,
       name: p.guests?.name ?? '',
       createdAt: p.created_at,
+      width: p.width,
+      height: p.height,
       thumbUrl: urlByPath.get(p.thumb_path) ?? null,
       fullUrl: urlByPath.get(p.storage_path) ?? null,
     })),

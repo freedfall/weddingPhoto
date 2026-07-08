@@ -68,7 +68,17 @@ body::before {
   animation: pulse-soft 1.4s ease-in-out infinite;
 }
 
+.img-fade {
+  opacity: 0;
+  transition: opacity 0.35s ease-out;
+}
+
+.img-fade.loaded {
+  opacity: 1;
+}
+
 @media (prefers-reduced-motion: reduce) {
+  .img-fade { transition: none; opacity: 1; }
   .page-enter, .card-in, .counter-roll, .fade-in, .skeleton {
     animation: none;
   }

@@ -7,8 +7,15 @@ export type GalleryPhoto = {
   id: string
   name: string
   createdAt: string
+  width: number | null
+  height: number | null
   thumbUrl: string | null
   fullUrl: string | null
+}
+
+// картинка появляется плавно; для уже закэшированных браузером — сразу
+function revealWhenLoaded(el: HTMLImageElement | null) {
+  if (el?.complete) el.classList.add('loaded')
 }
 
 export default function GalleryGrid({ photos }: { photos: GalleryPhoto[] }) {
@@ -28,10 +35,22 @@ export default function GalleryGrid({ photos }: { photos: GalleryPhoto[] }) {
             style={{ animationDelay: `${Math.min(i * 40, 400)}ms` }}
             onClick={() => setOpenIndex(i)}
           >
-            {p.thumbUrl && (
-              /* eslint-disable-next-line @next/next/no-img-element */
-              <img src={p.thumbUrl} alt={`Фото от ${p.name}`} loading="lazy" className="w-full" />
-            )}
+            <div
+              className="w-full overflow-hidden bg-line/40"
+              style={{ aspectRatio: p.width && p.height ? `${p.width} / ${p.height}` : '3 / 4' }}
+            >
+              {p.thumbUrl && (
+                /* eslint-disable-next-line @next/next/no-img-element */
+                <img
+                  ref={revealWhenLoaded}
+                  src={p.thumbUrl}
+                  alt={`Фото от ${p.name}`}
+                  loading="lazy"
+                  onLoad={(e) => e.currentTarget.classList.add('loaded')}
+                  className="img-fade h-full w-full object-cover"
+                />
+              )}
+            </div>
             <figcaption className="flex justify-between py-1 font-mono text-[10px] opacity-60">
               <span>{p.name}</span>
               <span>{new Date(p.createdAt).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}</span>

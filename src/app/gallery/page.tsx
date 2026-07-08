@@ -7,15 +7,20 @@ import GalleryGrid, { GalleryPhoto } from '@/components/GalleryGrid'
 
 const POLL_MS = 8000
 
+// Кэш на время жизни вкладки: при повторном заходе галерея рисуется сразу,
+// свежий список подтягивается фоном (и далее раз в 8 секунд).
+let photosCache: GalleryPhoto[] | null = null
+
 export default function GalleryPage() {
   const [allowed, setAllowed] = useState<boolean | null>(null)
-  const [photos, setPhotos] = useState<GalleryPhoto[]>([])
-  const [loaded, setLoaded] = useState(false)
+  const [photos, setPhotos] = useState<GalleryPhoto[]>(photosCache ?? [])
+  const [loaded, setLoaded] = useState(photosCache !== null)
 
   const refresh = useCallback(() => {
     fetch('/api/photos')
       .then((r) => (r.ok ? r.json() : Promise.reject()))
       .then((d) => {
+        photosCache = d.photos
         setPhotos(d.photos)
         setLoaded(true)
       })
