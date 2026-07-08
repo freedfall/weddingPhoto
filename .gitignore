@@ -42,3 +42,6 @@ next-env.d.ts
 
 # superpowers (local tooling, not part of the app)
 .superpowers/
+
+# QR code generator output
+qr.png

@@ -1,36 +1,37 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Свадебная плёнка 🎞
 
-## Getting Started
+Гости сканируют QR на столе → получают «плёнку» на 10 кадров → снимают камерой телефона → все фото падают в общий альбом. Спека: `docs/superpowers/specs/2026-07-08-wedding-photo-design.md`.
 
-First, run the development server:
+## Запуск локально
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+1. `npm i`
+2. Скопировать `.env.example` → `.env.local`, заполнить из Supabase (Project Settings → API) и придумать `ADMIN_PASSWORD`.
+3. Применить `supabase/schema.sql` в SQL Editor проекта Supabase.
+4. `npm run dev`
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Тесты
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+`npm test`
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Деплой (Vercel)
 
-## Learn More
+1. Запушить репозиторий на GitHub.
+2. Vercel → Add New Project → импортировать репозиторий (настройки по умолчанию).
+3. Environment Variables: `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `ADMIN_PASSWORD`.
+4. Deploy → проверить прод с телефона: снять кадр, увидеть его в галерее, зайти в `/admin`.
 
-To learn more about Next.js, take a look at the following resources:
+## QR для столов
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+`node scripts/qr.mjs https://<прод-домен>` → печатать `qr.png` (один QR на все столы).
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Чек-лист за 1–2 дня до свадьбы
 
-## Deploy on Vercel
+- [ ] Открыть дашборд Supabase (бесплатный проект «засыпает» через ~неделю простоя).
+- [ ] Удалить тестовых гостей/фото через `/admin`.
+- [ ] Загрузить 2–3 «затравочных» фото, чтобы альбом не был пустым.
+- [ ] Проверить путь целиком по QR с двух телефонов (iOS + Android).
+- [ ] Записать админ-пароль у обоих.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## После свадьбы
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Скачать ZIP через `/admin` в первые дни. Сайт можно оставить открытым для гостей.
