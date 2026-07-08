@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { useCallback, useEffect, useState } from 'react'
-import { loadGuest } from '@/lib/client/guest'
+import { loadGuest, loadUsedCache, saveUsedCache } from '@/lib/client/guest'
 import GalleryGrid, { GalleryPhoto } from '@/components/GalleryGrid'
 
 const POLL_MS = 8000
@@ -10,11 +10,15 @@ const POLL_MS = 8000
 export default function GalleryPage() {
   const [allowed, setAllowed] = useState<boolean | null>(null)
   const [photos, setPhotos] = useState<GalleryPhoto[]>([])
+  const [loaded, setLoaded] = useState(false)
 
   const refresh = useCallback(() => {
     fetch('/api/photos')
       .then((r) => (r.ok ? r.json() : Promise.reject()))
-      .then((d) => setPhotos(d.photos))
+      .then((d) => {
+        setPhotos(d.photos)
+        setLoaded(true)
+      })
       .catch(() => {})
   }, [])
 
@@ -24,9 +28,17 @@ export default function GalleryPage() {
       setAllowed(false)
       return
     }
+    // Быстрый путь: камера уже сохранила счётчик — открываем сразу, без запроса.
+    if (loadUsedCache() !== null) {
+      setAllowed(true)
+      return
+    }
     fetch(`/api/guests/${guest.id}`)
       .then((r) => (r.ok ? r.json() : Promise.reject()))
-      .then((d) => setAllowed(d.used >= 1))
+      .then((d) => {
+        if (d.used >= 1) saveUsedCache(d.used)
+        setAllowed(d.used >= 1)
+      })
       .catch(() => setAllowed(false))
   }, [])
 
@@ -57,12 +69,26 @@ export default function GalleryPage() {
   return (
     <div className="space-y-5">
       <header className="flex items-baseline justify-between">
-        <h1 className="font-serif text-2xl text-wine">Общий альбом</h1>
+        <h1 className="font-serif text-2xl font-semibold text-wine">Общий альбом</h1>
         <Link href="/" className="font-mono text-xs uppercase tracking-widest underline underline-offset-4">
           к камере
         </Link>
       </header>
-      <GalleryGrid photos={photos} />
+      {loaded ? <GalleryGrid photos={photos} /> : <GallerySkeleton />}
+    </div>
+  )
+}
+
+function GallerySkeleton() {
+  const heights = ['h-36', 'h-48', 'h-40', 'h-52', 'h-44', 'h-36']
+  return (
+    <div className="columns-2 gap-3 sm:columns-3">
+      {heights.map((h, i) => (
+        <div key={i} className="skeleton mb-3 break-inside-avoid bg-white p-2 pb-1 shadow-sm" style={{ animationDelay: `${i * 120}ms` }}>
+          <div className={`${h} w-full bg-line/60`} />
+          <div className="my-1.5 h-2 w-1/2 bg-line/60" />
+        </div>
+      ))}
     </div>
   )
 }

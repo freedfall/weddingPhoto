@@ -33,11 +33,11 @@ export default function NameForm({ onDone }: { onDone: (g: Guest) => void }) {
     <div className="flex min-h-[80dvh] flex-col justify-center gap-8 text-center">
       <header className="space-y-3">
         <p className="font-mono text-xs uppercase tracking-[0.3em] text-wine">{EVENT.date}</p>
-        <h1 className="font-serif text-4xl text-wine">{EVENT.couple}</h1>
+        <h1 className="font-serif text-4xl font-semibold text-wine">{EVENT.couple}</h1>
       </header>
 
       <div className="mx-auto max-w-xs space-y-2 border-y border-line py-6">
-        <p className="font-serif text-lg">У тебя есть плёнка на 10 кадров</p>
+        <p className="font-serif text-lg font-medium">У тебя есть плёнка на 10 кадров</p>
         <p className="text-sm opacity-70">
           Снимай моменты этого вечера — каждый кадр сразу попадает в наш общий альбом.
         </p>

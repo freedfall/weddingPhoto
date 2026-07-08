@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { useEffect, useRef, useState } from 'react'
 import { compressImage } from '@/lib/client/compress'
-import { Guest } from '@/lib/client/guest'
+import { Guest, saveUsedCache } from '@/lib/client/guest'
 import { uploadWithRetry } from '@/lib/client/upload'
 import { PHOTO_LIMIT } from '@/lib/validation'
 
@@ -20,7 +20,10 @@ export default function CameraScreen({ guest }: { guest: Guest }) {
     setUsed(null)
     fetch(`/api/guests/${guest.id}`)
       .then((r) => (r.ok ? r.json() : Promise.reject()))
-      .then((d) => setUsed(d.used))
+      .then((d) => {
+        setUsed(d.used)
+        if (d.used >= 1) saveUsedCache(d.used)
+      })
       .catch(() => setLoadFailed(true))
   }
 
@@ -55,9 +58,11 @@ export default function CameraScreen({ guest }: { guest: Guest }) {
     setSending(false)
     if (result.ok) {
       setUsed(result.data.used)
+      saveUsedCache(result.data.used)
       discardPreview()
     } else if (result.fatal && result.status === 409) {
       setUsed(PHOTO_LIMIT)
+      saveUsedCache(PHOTO_LIMIT)
       discardPreview()
     } else {
       setError('Не удалось отправить фото. Кадр не потрачен — попробуй ещё раз.')
@@ -86,9 +91,9 @@ export default function CameraScreen({ guest }: { guest: Guest }) {
   return (
     <div className="flex min-h-[85dvh] flex-col items-center justify-between py-4 text-center">
       <header className="space-y-1">
-        <p className="font-serif text-xl">Привет, {guest.name}!</p>
-        <div className="mx-auto mt-3 inline-block border border-line bg-white/60 px-4 py-1">
-          <span className="font-mono text-2xl tabular-nums text-wine">
+        <p className="font-serif text-xl font-medium">Привет, {guest.name}!</p>
+        <div className="mx-auto mt-3 inline-block overflow-hidden border border-line bg-white/60 px-4 py-1">
+          <span key={left} className="counter-roll font-mono text-2xl tabular-nums text-wine">
             {String(left).padStart(2, '0')}/{PHOTO_LIMIT}
           </span>
         </div>
@@ -96,26 +101,26 @@ export default function CameraScreen({ guest }: { guest: Guest }) {
       </header>
 
       {done ? (
-        <div className="space-y-4">
-          <p className="font-serif text-2xl text-wine">Плёнка отснята 🎞</p>
+        <div className="card-in space-y-4">
+          <p className="font-serif text-2xl font-semibold text-wine">Плёнка отснята 🎞</p>
           <p className="text-sm opacity-70">Спасибо! Все твои кадры уже в общем альбоме.</p>
         </div>
       ) : preview ? (
-        <div className="w-full space-y-4">
+        <div className="card-in w-full space-y-4">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={preview.url} alt="Твой кадр" className="mx-auto max-h-[45dvh] border-8 border-white shadow-md" />
           <div className="flex justify-center gap-3">
             <button
               onClick={keep}
               disabled={sending}
-              className="rounded-full bg-wine px-6 py-3 font-mono text-sm uppercase tracking-widest text-paper disabled:opacity-40"
+              className="rounded-full bg-wine px-6 py-3 font-mono text-sm uppercase tracking-widest text-paper transition-transform active:scale-95 disabled:opacity-40"
             >
               {sending ? 'отправляется…' : 'Оставить'}
             </button>
             <button
               onClick={discardPreview}
               disabled={sending}
-              className="rounded-full border border-ink/30 px-6 py-3 font-mono text-sm uppercase tracking-widest disabled:opacity-40"
+              className="rounded-full border border-ink/30 px-6 py-3 font-mono text-sm uppercase tracking-widest transition-transform active:scale-95 disabled:opacity-40"
             >
               Переснять
             </button>
@@ -125,9 +130,9 @@ export default function CameraScreen({ guest }: { guest: Guest }) {
         <button
           onClick={() => inputRef.current?.click()}
           aria-label="Сделать снимок"
-          className="grid size-24 place-items-center rounded-full border-4 border-wine/30"
+          className="group grid size-24 place-items-center rounded-full border-4 border-wine/30 transition-transform active:scale-90"
         >
-          <span className="block size-16 rounded-full bg-wine" />
+          <span className="block size-16 rounded-full bg-wine transition-transform group-active:scale-90" />
         </button>
       )}
 

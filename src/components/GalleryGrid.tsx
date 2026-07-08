@@ -22,7 +22,12 @@ export default function GalleryGrid({ photos }: { photos: GalleryPhoto[] }) {
     <>
       <div className="columns-2 gap-3 sm:columns-3">
         {photos.map((p, i) => (
-          <figure key={p.id} className="mb-3 break-inside-avoid bg-white p-2 pb-1 shadow-sm" onClick={() => setOpenIndex(i)}>
+          <figure
+            key={p.id}
+            className="card-in mb-3 break-inside-avoid bg-white p-2 pb-1 shadow-sm transition-transform active:scale-[0.98]"
+            style={{ animationDelay: `${Math.min(i * 40, 400)}ms` }}
+            onClick={() => setOpenIndex(i)}
+          >
             {p.thumbUrl && (
               /* eslint-disable-next-line @next/next/no-img-element */
               <img src={p.thumbUrl} alt={`Фото от ${p.name}`} loading="lazy" className="w-full" />

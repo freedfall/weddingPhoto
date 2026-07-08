@@ -14,7 +14,7 @@ export default function Lightbox({ photos, index, onIndex, onClose }: Props) {
   if (!photo) return null
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col bg-ink/95" onClick={onClose}>
+    <div className="fade-in fixed inset-0 z-50 flex flex-col bg-ink/95" onClick={onClose}>
       <div className="flex justify-end p-4">
         <button aria-label="Закрыть" className="font-mono text-2xl text-paper" onClick={onClose}>✕</button>
       </div>
@@ -27,7 +27,7 @@ export default function Lightbox({ photos, index, onIndex, onClose }: Props) {
         >
           ‹
         </button>
-        <figure className="max-h-full">
+        <figure key={photo.id} className="card-in max-h-full">
           {photo.fullUrl && (
             /* eslint-disable-next-line @next/next/no-img-element */
             <img src={photo.fullUrl} alt={`Фото от ${photo.name}`} className="max-h-[75dvh] w-auto border-8 border-white" />
