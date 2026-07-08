@@ -9,16 +9,24 @@ import { PHOTO_LIMIT } from '@/lib/validation'
 
 export default function CameraScreen({ guest }: { guest: Guest }) {
   const [used, setUsed] = useState<number | null>(null)
+  const [loadFailed, setLoadFailed] = useState(false)
   const [preview, setPreview] = useState<{ blob: Blob; url: string } | null>(null)
   const [sending, setSending] = useState(false)
   const [error, setError] = useState('')
   const inputRef = useRef<HTMLInputElement>(null)
 
-  useEffect(() => {
+  function loadUsed() {
+    setLoadFailed(false)
+    setUsed(null)
     fetch(`/api/guests/${guest.id}`)
       .then((r) => (r.ok ? r.json() : Promise.reject()))
       .then((d) => setUsed(d.used))
-      .catch(() => setUsed(0))
+      .catch(() => setLoadFailed(true))
+  }
+
+  useEffect(() => {
+    loadUsed()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [guest.id])
 
   async function onPick(e: React.ChangeEvent<HTMLInputElement>) {
@@ -54,6 +62,20 @@ export default function CameraScreen({ guest }: { guest: Guest }) {
     } else {
       setError('Не удалось отправить фото. Кадр не потрачен — попробуй ещё раз.')
     }
+  }
+
+  if (loadFailed) {
+    return (
+      <div className="space-y-4 py-20 text-center">
+        <p className="font-mono text-sm">Не удалось загрузить плёнку. Проверь связь.</p>
+        <button
+          onClick={loadUsed}
+          className="rounded-full border border-ink/30 px-6 py-3 font-mono text-sm uppercase tracking-widest"
+        >
+          Попробовать ещё раз
+        </button>
+      </div>
+    )
   }
 
   if (used === null) return <p className="py-20 text-center font-mono text-sm">плёнка заряжается…</p>
