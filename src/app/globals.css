@@ -28,7 +28,9 @@ body::before {
 }
 
 .page-enter {
-  animation: page-enter 0.3s ease-out both;
+  /* без fill-mode: после анимации transform снимается, иначе он превращает
+     обёртку в containing block и ломает position:fixed у потомков */
+  animation: page-enter 0.3s ease-out backwards;
 }
 
 @keyframes card-in {
