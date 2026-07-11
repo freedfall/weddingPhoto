@@ -156,17 +156,19 @@ export default function CameraScreen({ guest }: { guest: Guest }) {
         <div className="relative">
           <svg className="absolute -inset-2 -rotate-90" viewBox="0 0 100 100" aria-hidden>
             <circle cx="50" cy="50" r="46" fill="none" stroke="var(--color-line)" strokeWidth="3" />
-            <circle
-              cx="50"
-              cy="50"
-              r="46"
-              fill="none"
-              stroke="var(--color-wine)"
-              strokeWidth="3"
-              strokeLinecap="round"
-              strokeDasharray={`${(used / PHOTO_LIMIT) * 289} 289`}
-              className="transition-[stroke-dasharray] duration-500"
-            />
+            {used > 0 && (
+              <circle
+                cx="50"
+                cy="50"
+                r="46"
+                fill="none"
+                stroke="var(--color-wine)"
+                strokeWidth="3"
+                strokeLinecap="round"
+                strokeDasharray={`${(used / PHOTO_LIMIT) * 289} 289`}
+                className="transition-[stroke-dasharray] duration-500"
+              />
+            )}
           </svg>
           <button
             onClick={() => inputRef.current?.click()}
