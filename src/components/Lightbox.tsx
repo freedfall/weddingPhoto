@@ -96,16 +96,19 @@ export default function Lightbox({ photos, index, onIndex, onClose }: Props) {
                 className="flex h-full min-w-0 flex-[0_0_100%] flex-col items-center justify-center gap-3 px-3 pb-6"
               >
                 {p.fullUrl && loaded.has(i) && (
-                  /* eslint-disable-next-line @next/next/no-img-element */
-                  <img
-                    src={p.fullUrl}
-                    alt={`Фото от ${p.name}`}
-                    draggable={false}
-                    onClick={(e) => e.stopPropagation()}
-                    className="max-h-[80dvh] max-w-full border-4 border-white object-contain shadow-lg"
-                  />
+                  <div className="max-w-full" onClick={(e) => e.stopPropagation()}>
+                    <div className="perf-strip perf-strip--paper opacity-50" aria-hidden />
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={p.fullUrl}
+                      alt={`Фото от ${p.name}`}
+                      draggable={false}
+                      className="max-h-[76dvh] max-w-full object-contain py-1"
+                    />
+                    <div className="perf-strip perf-strip--paper opacity-50" aria-hidden />
+                  </div>
                 )}
-                <figcaption className="font-mono text-xs tracking-wider text-paper/80">
+                <figcaption className="font-mono text-xs uppercase tracking-[0.2em] text-sepia">
                   {p.name} ·{' '}
                   {new Date(p.createdAt).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}
                 </figcaption>
