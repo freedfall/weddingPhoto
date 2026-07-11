@@ -21,9 +21,9 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="ru">
+    <html lang="ru" className={`${cormorant.variable} ${montserratAlt.variable} ${jbMono.variable}`}>
       <body
-        className={`${cormorant.variable} ${montserratAlt.variable} ${jbMono.variable} bg-paper text-ink font-sans antialiased min-h-dvh`}
+        className="bg-paper text-ink font-sans antialiased min-h-dvh"
       >
         <main className="mx-auto max-w-md min-h-dvh px-5 py-6">{children}</main>
       </body>
