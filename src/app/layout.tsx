@@ -1,7 +1,12 @@
 import type { Metadata } from 'next'
-import { JetBrains_Mono, Montserrat_Alternates } from 'next/font/google'
+import { Cormorant, JetBrains_Mono, Montserrat_Alternates } from 'next/font/google'
 import './globals.css'
 
+const cormorant = Cormorant({
+  subsets: ['cyrillic', 'latin'],
+  weight: ['500', '600', '700'],
+  variable: '--font-cormorant',
+})
 const montserratAlt = Montserrat_Alternates({
   subsets: ['cyrillic', 'latin'],
   weight: ['400', '500', '600', '700'],
@@ -17,7 +22,9 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="ru">
-      <body className={`${montserratAlt.variable} ${jbMono.variable} bg-paper text-ink font-sans antialiased min-h-dvh`}>
+      <body
+        className={`${cormorant.variable} ${montserratAlt.variable} ${jbMono.variable} bg-paper text-ink font-sans antialiased min-h-dvh`}
+      >
         <main className="mx-auto max-w-md min-h-dvh px-5 py-6">{children}</main>
       </body>
     </html>
