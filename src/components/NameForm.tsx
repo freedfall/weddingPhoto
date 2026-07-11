@@ -30,20 +30,29 @@ export default function NameForm({ onDone }: { onDone: (g: Guest) => void }) {
   }
 
   return (
-    <div className="flex min-h-[80dvh] flex-col justify-center gap-8 text-center">
-      <header className="space-y-3">
-        <p className="font-mono text-xs uppercase tracking-[0.3em] text-wine">{EVENT.date}</p>
-        <h1 className="font-serif text-4xl font-semibold text-wine">{EVENT.couple}</h1>
+    <div className="flex min-h-[85dvh] flex-col items-center justify-center gap-7 text-center">
+      <header className="card-in space-y-3">
+        <p className="font-mono text-[11px] uppercase tracking-[0.35em] text-ink/55">
+          Wedding film · 10 exp
+        </p>
+        <h1 className="font-serif text-5xl font-semibold leading-tight text-wine">{EVENT.couple}</h1>
+        <p className="font-mono text-xs uppercase tracking-[0.3em] text-sepia">{EVENT.date}</p>
       </header>
 
-      <div className="mx-auto max-w-xs space-y-2 border-y border-line py-6">
-        <p className="font-serif text-lg font-medium">У тебя есть плёнка на 10 кадров</p>
+      <div className="film-strip-v card-in h-24" style={{ animationDelay: '120ms' }} aria-hidden />
+
+      <div className="card-in max-w-xs space-y-2" style={{ animationDelay: '240ms' }}>
+        <p className="font-serif text-2xl font-medium">У тебя есть плёнка на 10 кадров</p>
         <p className="text-sm opacity-70">
           Снимай моменты этого вечера — каждый кадр сразу попадает в наш общий альбом.
         </p>
       </div>
 
-      <form onSubmit={submit} className="mx-auto flex w-full max-w-xs flex-col gap-3">
+      <form
+        onSubmit={submit}
+        className="card-in mx-auto flex w-full max-w-xs flex-col gap-3"
+        style={{ animationDelay: '360ms' }}
+      >
         <input
           value={name}
           onChange={(e) => setName(e.target.value)}
