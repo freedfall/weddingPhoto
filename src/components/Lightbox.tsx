@@ -17,7 +17,10 @@ function neighbors(i: number): number[] {
 }
 
 export default function Lightbox({ photos, index, onIndex, onClose }: Props) {
-  const [emblaRef, embla] = useEmblaCarousel({ startIndex: index })
+  // startIndex фиксируем на момент открытия: если подставлять текущий index,
+  // каждый свайп меняет опции → embla делает reInit и доводка обрывается рывком
+  const initialIndex = useRef(index)
+  const [emblaRef, embla] = useEmblaCarousel({ startIndex: initialIndex.current, duration: 22 })
   // полные фото грузим только вокруг текущего кадра, а не все 700 разом
   const [loaded, setLoaded] = useState<Set<number>>(() => new Set(neighbors(index)))
   const [canPrev, setCanPrev] = useState(index > 0)
