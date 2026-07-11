@@ -73,11 +73,14 @@ export default function GalleryPage() {
 
   return (
     <div className="space-y-5">
-      <header className="flex items-baseline justify-between">
-        <h1 className="font-serif text-2xl font-semibold text-wine">Общий альбом</h1>
-        <Link href="/" className="font-mono text-xs uppercase tracking-widest underline underline-offset-4">
-          к камере
-        </Link>
+      <header className="space-y-3">
+        <div className="flex items-baseline justify-between">
+          <h1 className="font-serif text-3xl font-semibold text-wine">Общий альбом</h1>
+          <Link href="/" className="font-mono text-xs uppercase tracking-widest underline underline-offset-4">
+            к камере
+          </Link>
+        </div>
+        <div className="perf-strip opacity-30" aria-hidden />
       </header>
       {loaded ? <GalleryGrid photos={photos} /> : <GallerySkeleton />}
     </div>

@@ -2,6 +2,8 @@
 
 import { useState } from 'react'
 import Lightbox from '@/components/Lightbox'
+import { photoTilt } from '@/lib/client/tilt'
+import { developSet } from '@/lib/client/develop'
 
 export type GalleryPhoto = {
   id: string
@@ -20,6 +22,8 @@ function revealWhenLoaded(el: HTMLImageElement | null) {
 
 export default function GalleryGrid({ photos }: { photos: GalleryPhoto[] }) {
   const [openIndex, setOpenIndex] = useState<number | null>(null)
+  // фото, появившиеся после первого показа галереи, «проявляются»
+  const developing = developSet(photos.map((p) => p.id))
 
   if (photos.length === 0) {
     return <p className="py-16 text-center font-mono text-sm opacity-60">Пока ни одного кадра — будь первым!</p>
@@ -28,35 +32,47 @@ export default function GalleryGrid({ photos }: { photos: GalleryPhoto[] }) {
   return (
     <>
       <div className="columns-2 gap-3 sm:columns-3">
-        {photos.map((p, i) => (
-          <figure
-            key={p.id}
-            className="card-in mb-3 break-inside-avoid bg-white p-2 pb-1 shadow-sm transition-transform active:scale-[0.98]"
-            style={{ animationDelay: `${Math.min(i * 40, 400)}ms` }}
-            onClick={() => setOpenIndex(i)}
-          >
-            <div
-              className="w-full overflow-hidden bg-line/40"
-              style={{ aspectRatio: p.width && p.height ? `${p.width} / ${p.height}` : '3 / 4' }}
+        {photos.map((p, i) => {
+          const tilt = photoTilt(p.id)
+          return (
+            <figure
+              key={p.id}
+              className="card-in mb-3 break-inside-avoid bg-white p-2 pb-1 transition-transform active:scale-[0.98]"
+              style={
+                {
+                  animationDelay: `${Math.min(i * 40, 400)}ms`,
+                  '--tilt': `${tilt.rotate}deg`,
+                  transform: 'rotate(var(--tilt))',
+                  boxShadow: `${tilt.shadowX}px 2px 8px rgba(28, 26, 23, 0.14)`,
+                } as React.CSSProperties
+              }
+              onClick={() => setOpenIndex(i)}
             >
-              {p.thumbUrl && (
-                /* eslint-disable-next-line @next/next/no-img-element */
-                <img
-                  ref={revealWhenLoaded}
-                  src={p.thumbUrl}
-                  alt={`Фото от ${p.name}`}
-                  loading="lazy"
-                  onLoad={(e) => e.currentTarget.classList.add('loaded')}
-                  className="img-fade h-full w-full object-cover"
-                />
-              )}
-            </div>
-            <figcaption className="flex justify-between py-1 font-mono text-[10px] opacity-60">
-              <span>{p.name}</span>
-              <span>{new Date(p.createdAt).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}</span>
-            </figcaption>
-          </figure>
-        ))}
+              <div
+                className="w-full overflow-hidden bg-cream"
+                style={{ aspectRatio: p.width && p.height ? `${p.width} / ${p.height}` : '3 / 4' }}
+              >
+                {p.thumbUrl && (
+                  /* eslint-disable-next-line @next/next/no-img-element */
+                  <img
+                    ref={revealWhenLoaded}
+                    src={p.thumbUrl}
+                    alt={`Фото от ${p.name}`}
+                    loading="lazy"
+                    onLoad={(e) => e.currentTarget.classList.add('loaded')}
+                    className={`img-fade h-full w-full object-cover${developing.has(p.id) ? ' develop' : ''}`}
+                  />
+                )}
+              </div>
+              <figcaption className="flex justify-between py-1 font-mono text-[10px] uppercase">
+                <span className="opacity-60">{p.name}</span>
+                <span className="text-sepia">
+                  {new Date(p.createdAt).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}
+                </span>
+              </figcaption>
+            </figure>
+          )
+        })}
       </div>
       {openIndex !== null && (
         <Lightbox photos={photos} index={openIndex} onIndex={setOpenIndex} onClose={() => setOpenIndex(null)} />
