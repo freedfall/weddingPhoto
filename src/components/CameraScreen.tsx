@@ -166,7 +166,7 @@ export default function CameraScreen({ guest }: { guest: Guest }) {
                 strokeWidth="3"
                 strokeLinecap="round"
                 strokeDasharray={`${(used / PHOTO_LIMIT) * 289} 289`}
-                className="transition-[stroke-dasharray] duration-500"
+                className="motion-safe:transition-[stroke-dasharray] motion-safe:duration-500"
               />
             )}
           </svg>

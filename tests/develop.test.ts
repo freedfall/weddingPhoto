@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { developSet, _resetDevelopTracker } from '@/lib/client/develop'
 
 describe('developSet', () => {
@@ -25,5 +25,17 @@ describe('developSet', () => {
   it('идемпотентен при двойном первом вызове (StrictMode)', () => {
     developSet(['a'])
     expect(developSet(['a']).size).toBe(0)
+  })
+
+  it('после окна проявки id больше не возвращается (повторный заход в галерею)', () => {
+    vi.useFakeTimers()
+    try {
+      developSet(['a'])
+      expect([...developSet(['a', 'b'])]).toEqual(['b'])
+      vi.advanceTimersByTime(6000)
+      expect(developSet(['a', 'b']).size).toBe(0)
+    } finally {
+      vi.useRealTimers()
+    }
   })
 })
