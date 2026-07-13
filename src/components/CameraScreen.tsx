@@ -154,7 +154,7 @@ export default function CameraScreen({ guest }: { guest: Guest }) {
         </div>
       ) : (
         <div className="relative">
-          <svg className="absolute -inset-2 -rotate-90" viewBox="0 0 100 100" aria-hidden>
+          <svg className="pointer-events-none absolute -inset-2 -rotate-90" viewBox="0 0 100 100" aria-hidden>
             <circle cx="50" cy="50" r="46" fill="none" stroke="var(--color-line)" strokeWidth="3" />
             {used > 0 && (
               <circle
