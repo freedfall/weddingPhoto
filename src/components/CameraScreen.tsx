@@ -153,8 +153,12 @@ export default function CameraScreen({ guest }: { guest: Guest }) {
           </div>
         </div>
       ) : (
-        <div className="relative">
-          <svg className="pointer-events-none absolute -inset-2 -rotate-90" viewBox="0 0 100 100" aria-hidden>
+        <div className="relative grid size-28 place-items-center">
+          <svg
+            className="pointer-events-none absolute inset-0 size-full -rotate-90"
+            viewBox="0 0 100 100"
+            aria-hidden
+          >
             <circle cx="50" cy="50" r="46" fill="none" stroke="var(--color-line)" strokeWidth="3" />
             {used > 0 && (
               <circle
@@ -173,7 +177,7 @@ export default function CameraScreen({ guest }: { guest: Guest }) {
           <button
             onClick={() => inputRef.current?.click()}
             aria-label="Сделать снимок"
-            className="group grid size-24 place-items-center rounded-full border-4 border-wine/30 transition-transform active:scale-90"
+            className="group relative z-10 grid size-24 place-items-center rounded-full border-4 border-wine/30 transition-transform active:scale-90"
           >
             <span className="block size-16 rounded-full bg-wine transition-transform group-active:scale-90" />
           </button>
