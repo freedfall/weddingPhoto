@@ -15,15 +15,18 @@ export type GalleryPhoto = {
   fullUrl: string | null
 }
 
-// картинка появляется плавно; для уже закэшированных браузером — сразу
-function revealWhenLoaded(el: HTMLImageElement | null) {
-  if (el?.complete) el.classList.add('loaded')
-}
-
 export default function GalleryGrid({ photos }: { photos: GalleryPhoto[] }) {
   const [openIndex, setOpenIndex] = useState<number | null>(null)
+  const [loadedIds, setLoadedIds] = useState<Set<string>>(() => new Set())
   // фото, появившиеся после первого показа галереи, «проявляются»
   const developing = developSet(photos.map((p) => p.id))
+
+  function markLoaded(id: string) {
+    setLoadedIds((current) => {
+      if (current.has(id)) return current
+      return new Set(current).add(id)
+    })
+  }
 
   if (photos.length === 0) {
     return <p className="py-16 text-center font-mono text-sm opacity-60">Пока ни одного кадра — будь первым!</p>
@@ -34,6 +37,7 @@ export default function GalleryGrid({ photos }: { photos: GalleryPhoto[] }) {
       <div className="columns-2 gap-3 sm:columns-3">
         {photos.map((p, i) => {
           const tilt = photoTilt(p.id)
+          const isLoaded = loadedIds.has(p.id)
           return (
             <figure
               key={p.id}
@@ -55,12 +59,16 @@ export default function GalleryGrid({ photos }: { photos: GalleryPhoto[] }) {
                 {p.thumbUrl && (
                   /* eslint-disable-next-line @next/next/no-img-element */
                   <img
-                    ref={revealWhenLoaded}
+                    ref={(element) => {
+                      if (element?.complete) markLoaded(p.id)
+                    }}
                     src={p.thumbUrl}
                     alt={`Фото от ${p.name}`}
                     loading="lazy"
-                    onLoad={(e) => e.currentTarget.classList.add('loaded')}
-                    className={`img-fade h-full w-full object-cover${developing.has(p.id) ? ' develop' : ''}`}
+                    onLoad={() => markLoaded(p.id)}
+                    className={`img-fade h-full w-full object-cover${isLoaded ? ' loaded' : ''}${
+                      isLoaded && developing.has(p.id) ? ' develop' : ''
+                    }`}
                   />
                 )}
               </div>
