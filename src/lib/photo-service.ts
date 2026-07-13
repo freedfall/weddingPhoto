@@ -28,8 +28,17 @@ export async function addPhoto(
   const thumbPath = `${guestId}/${id}_thumb.jpg`
 
   const thumb = await deps.makeThumb(original)
-  await deps.uploadFile(storagePath, original, 'image/jpeg')
-  await deps.uploadFile(thumbPath, thumb.data, 'image/jpeg')
+  try {
+    // Оригинал и превью независимы: отправляем одновременно, чтобы гость
+    // не ждал две последовательные загрузки в Storage.
+    await Promise.all([
+      deps.uploadFile(storagePath, original, 'image/jpeg'),
+      deps.uploadFile(thumbPath, thumb.data, 'image/jpeg'),
+    ])
+  } catch (err) {
+    await deps.removeFiles([storagePath, thumbPath]).catch(() => {})
+    throw err
+  }
 
   try {
     const { photoId, used } = await deps.claimSlot(guestId, storagePath, thumbPath, {

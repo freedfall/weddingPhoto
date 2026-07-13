@@ -151,6 +151,11 @@ export default function CameraScreen({ guest }: { guest: Guest }) {
               Переснять
             </button>
           </div>
+          {sending && (
+            <p className="font-mono text-[11px] uppercase tracking-widest opacity-60">
+              сохраняем кадр в альбом — не закрывай страницу
+            </p>
+          )}
         </div>
       ) : (
         <div className="relative grid size-28 place-items-center">

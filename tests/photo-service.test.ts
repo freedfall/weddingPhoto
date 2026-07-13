@@ -50,6 +50,16 @@ describe('addPhoto', () => {
     expect(removed.length).toBe(2)
   })
 
+  test('cleans up storage when one of the uploads fails', async () => {
+    const { deps, removed } = makeDeps({
+      uploadFile: async (path) => {
+        if (path.endsWith('_thumb.jpg')) throw new Error('storage down')
+      },
+    })
+    await expect(addPhoto(deps, GUEST, Buffer.from('img'))).rejects.toThrow('storage down')
+    expect(removed).toEqual([`${GUEST}/photo-1.jpg`, `${GUEST}/photo-1_thumb.jpg`])
+  })
+
   test('propagates claim error even if cleanup fails', async () => {
     const { deps } = makeDeps({
       claimSlot: async () => { throw new LimitReachedError('limit') },

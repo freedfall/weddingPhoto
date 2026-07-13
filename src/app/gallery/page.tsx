@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { loadGuest, loadUsedCache, saveUsedCache } from '@/lib/client/guest'
 import GalleryGrid, { GalleryPhoto } from '@/components/GalleryGrid'
 
@@ -15,11 +15,16 @@ export default function GalleryPage() {
   const [allowed, setAllowed] = useState<boolean | null>(null)
   const [photos, setPhotos] = useState<GalleryPhoto[]>(photosCache ?? [])
   const [loaded, setLoaded] = useState(photosCache !== null)
+  const latestRefresh = useRef(0)
 
   const refresh = useCallback(() => {
+    const request = ++latestRefresh.current
     fetch('/api/photos')
       .then((r) => (r.ok ? r.json() : Promise.reject()))
       .then((d) => {
+        // Запросы от таймера и возврата на вкладку могут завершиться не по
+        // порядку. Устаревший ответ не должен затирать более свежий список.
+        if (request !== latestRefresh.current) return
         photosCache = d.photos
         setPhotos(d.photos)
         setLoaded(true)
