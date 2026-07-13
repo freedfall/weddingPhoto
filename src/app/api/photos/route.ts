@@ -5,6 +5,7 @@ import { supabaseAdmin } from '@/lib/supabase-server'
 import { isValidGuestId, validateUpload } from '@/lib/validation'
 
 export const runtime = 'nodejs'
+export const dynamic = 'force-dynamic'
 
 const urlCache = new SignedUrlCache()
 
@@ -47,7 +48,7 @@ export async function GET() {
   if (error) return Response.json({ error: 'db_error' }, { status: 500 })
 
   const rows = (data ?? []) as unknown as PhotoRow[]
-  if (rows.length === 0) return Response.json({ photos: [] })
+  if (rows.length === 0) return photosResponse([])
 
   const paths = rows.flatMap((p) => [p.thumb_path, p.storage_path])
   let urlByPath: Map<string, string>
@@ -64,8 +65,7 @@ export async function GET() {
   } catch {
     return Response.json({ error: 'sign_error' }, { status: 500 })
   }
-  return Response.json({
-    photos: rows.map((p) => ({
+  return photosResponse(rows.map((p) => ({
       id: p.id,
       name: p.guests?.name ?? '',
       createdAt: p.created_at,
@@ -73,6 +73,12 @@ export async function GET() {
       height: p.height,
       thumbUrl: urlByPath.get(p.thumb_path) ?? null,
       fullUrl: urlByPath.get(p.storage_path) ?? null,
-    })),
-  })
+    })))
+}
+
+function photosResponse(photos: unknown[]) {
+  return Response.json(
+    { photos },
+    { headers: { 'Cache-Control': 'no-store, max-age=0' } }
+  )
 }

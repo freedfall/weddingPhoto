@@ -19,7 +19,7 @@ export default function GalleryPage() {
 
   const refresh = useCallback(() => {
     const request = ++latestRefresh.current
-    fetch('/api/photos')
+    fetch('/api/photos', { cache: 'no-store' })
       .then((r) => (r.ok ? r.json() : Promise.reject()))
       .then((d) => {
         // Запросы от таймера и возврата на вкладку могут завершиться не по

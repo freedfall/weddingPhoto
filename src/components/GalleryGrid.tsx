@@ -66,7 +66,7 @@ export default function GalleryGrid({ photos }: { photos: GalleryPhoto[] }) {
                     alt={`Фото от ${p.name}`}
                     loading="lazy"
                     onLoad={() => markLoaded(p.id)}
-                    className={`img-fade h-full w-full object-cover${isLoaded ? ' loaded' : ''}${
+                    className={`h-full w-full object-cover${
                       isLoaded && developing.has(p.id) ? ' develop' : ''
                     }`}
                   />

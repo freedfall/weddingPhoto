@@ -113,7 +113,7 @@ body::before {
   100% { opacity: 1; filter: none; }
 }
 
-.img-fade.loaded.develop {
+.develop {
   animation: develop 1.2s ease-out both;
 }
 
@@ -122,5 +122,5 @@ body::before {
   .page-enter, .card-in, .counter-roll, .fade-in, .skeleton {
     animation: none;
   }
-  .img-fade.loaded.develop { animation: fade-in 0.25s ease-out both; }
+  .develop { animation: fade-in 0.25s ease-out both; }
 }
