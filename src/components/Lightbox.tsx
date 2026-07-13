@@ -25,7 +25,26 @@ export default function Lightbox({ photos, index, onIndex, onClose }: Props) {
   const [loaded, setLoaded] = useState<Set<number>>(() => new Set(neighbors(index)))
   const [canPrev, setCanPrev] = useState(index > 0)
   const [canNext, setCanNext] = useState(index < photos.length - 1)
+  const [downloadingId, setDownloadingId] = useState<string | null>(null)
   const swiped = useRef(false)
+
+  async function downloadPhoto(photo: GalleryPhoto) {
+    if (!photo.fullUrl || downloadingId) return
+    setDownloadingId(photo.id)
+    try {
+      const response = await fetch(photo.fullUrl)
+      if (!response.ok) throw new Error('download failed')
+
+      const objectUrl = URL.createObjectURL(await response.blob())
+      const link = document.createElement('a')
+      link.href = objectUrl
+      link.download = `wedding-photo-${photo.createdAt.slice(0, 10)}.jpg`
+      link.click()
+      window.setTimeout(() => URL.revokeObjectURL(objectUrl), 0)
+    } finally {
+      setDownloadingId(null)
+    }
+  }
 
   // блокируем прокрутку страницы под лайтбоксом
   useEffect(() => {
@@ -96,22 +115,34 @@ export default function Lightbox({ photos, index, onIndex, onClose }: Props) {
                 className="flex h-full min-w-0 flex-[0_0_100%] flex-col items-center justify-center gap-3 px-3 pb-6"
               >
                 {p.fullUrl && loaded.has(i) && (
-                  <div className="max-w-full" onClick={(e) => e.stopPropagation()}>
-                    <div className="perf-strip perf-strip--paper opacity-50" aria-hidden />
+                  <div className="relative max-w-full bg-white p-2 pb-1 shadow-xl" onClick={(e) => e.stopPropagation()}>
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={p.fullUrl}
                       alt={`Фото от ${p.name}`}
                       draggable={false}
-                      className="max-h-[76dvh] max-w-full object-contain py-1"
+                      className="block max-h-[72dvh] max-w-full object-contain"
                     />
-                    <div className="perf-strip perf-strip--paper opacity-50" aria-hidden />
+                    <figcaption className="flex justify-between pt-1 font-mono text-[10px] uppercase">
+                      <span className="opacity-60">{p.name}</span>
+                      <span className="text-sepia">
+                        {new Date(p.createdAt).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}
+                      </span>
+                    </figcaption>
+                    <button
+                      type="button"
+                      aria-label="Скачать фото"
+                      title="Скачать фото"
+                      disabled={downloadingId === p.id}
+                      onClick={() => downloadPhoto(p)}
+                      className="absolute right-4 top-4 grid size-8 place-items-center rounded-full bg-white/85 text-ink shadow-sm transition-opacity hover:bg-white disabled:opacity-50"
+                    >
+                      <svg viewBox="0 0 24 24" className="size-4" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden>
+                        <path d="M12 3v12m0 0 4-4m-4 4-4-4M5 20h14" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    </button>
                   </div>
                 )}
-                <figcaption className="font-mono text-xs uppercase tracking-[0.2em] text-sepia">
-                  {p.name} ·{' '}
-                  {new Date(p.createdAt).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}
-                </figcaption>
               </figure>
             ))}
           </div>

@@ -35,7 +35,7 @@ export default function NameForm({ onDone }: { onDone: (g: Guest) => void }) {
         <p className="font-mono text-[11px] uppercase tracking-[0.35em] text-ink/55">
           Wedding film · 10 exp
         </p>
-        <h1 className="font-serif text-5xl font-semibold leading-tight text-wine">{EVENT.couple}</h1>
+        <h1 className="whitespace-nowrap font-serif text-5xl font-semibold leading-tight text-wine">{EVENT.couple}</h1>
         <p className="font-mono text-xs uppercase tracking-[0.3em] text-sepia">{EVENT.date}</p>
       </header>
 
