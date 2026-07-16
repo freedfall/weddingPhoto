@@ -123,7 +123,7 @@ export default function Lightbox({ photos, index, onIndex, onClose }: Props) {
                       draggable={false}
                       className="block max-h-[72dvh] max-w-full object-contain"
                     />
-                    <figcaption className="flex justify-between pt-1 font-mono text-[10px] uppercase">
+                    <figcaption className="flex justify-between pt-1 font-mono text-xs uppercase">
                       <span className="opacity-60">{p.name}</span>
                       <span className="text-sepia">
                         {new Date(p.createdAt).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}
