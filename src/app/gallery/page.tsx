@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { loadGuest, loadUsedCache, saveUsedCache } from '@/lib/client/guest'
 import GalleryGrid, { GalleryPhoto } from '@/components/GalleryGrid'
+import GalleryTimeline from '@/components/GalleryTimeline'
 
 const POLL_MS = 8000
 
@@ -15,6 +16,7 @@ export default function GalleryPage() {
   const [allowed, setAllowed] = useState<boolean | null>(null)
   const [photos, setPhotos] = useState<GalleryPhoto[]>(photosCache ?? [])
   const [loaded, setLoaded] = useState(photosCache !== null)
+  const [view, setView] = useState<'grid' | 'timeline'>('grid')
   const latestRefresh = useRef(0)
 
   const refresh = useCallback(() => {
@@ -79,15 +81,32 @@ export default function GalleryPage() {
   return (
     <div className="space-y-5">
       <header className="space-y-3">
-        <div className="flex items-baseline justify-between">
+        <div className="flex items-baseline justify-between gap-3">
           <h1 className="font-serif text-3xl font-semibold text-wine">Общий альбом</h1>
-          <Link href="/" className="font-mono text-xs uppercase tracking-widest underline underline-offset-4">
-            к камере
-          </Link>
+          <div className="flex gap-3 font-mono text-xs uppercase tracking-widest underline underline-offset-4">
+            <Link href="/my-photos">моя плёнка</Link>
+            <Link href="/">к камере</Link>
+          </div>
         </div>
         <div className="perf-strip opacity-30" aria-hidden />
       </header>
-      {loaded ? <GalleryGrid photos={photos} /> : <GallerySkeleton />}
+      {loaded && photos.length > 0 && (
+        <div className="flex justify-center gap-2 font-mono text-[11px] uppercase tracking-widest">
+          <button
+            onClick={() => setView('grid')}
+            className={view === 'grid' ? 'border-b border-wine pb-1 text-wine' : 'pb-1 opacity-50'}
+          >
+            Сетка
+          </button>
+          <button
+            onClick={() => setView('timeline')}
+            className={view === 'timeline' ? 'border-b border-wine pb-1 text-wine' : 'pb-1 opacity-50'}
+          >
+            Лента
+          </button>
+        </div>
+      )}
+      {loaded ? (view === 'grid' ? <GalleryGrid photos={photos} /> : <GalleryTimeline photos={photos} />) : <GallerySkeleton />}
     </div>
   )
 }

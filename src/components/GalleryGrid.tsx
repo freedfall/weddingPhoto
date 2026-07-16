@@ -13,6 +13,7 @@ export type GalleryPhoto = {
   height: number | null
   thumbUrl: string | null
   fullUrl: string | null
+  hiddenAt?: string | null
 }
 
 export default function GalleryGrid({ photos }: { photos: GalleryPhoto[] }) {

@@ -13,11 +13,12 @@ export default function AdminPage() {
   const [downloading, setDownloading] = useState(false)
 
   const refresh = useCallback(() => {
-    fetch('/api/photos')
+    if (!password) return
+    fetch('/api/photos?includeHidden=1', { headers: { 'x-admin-password': password }, cache: 'no-store' })
       .then((r) => (r.ok ? r.json() : Promise.reject()))
       .then((d) => setPhotos(d.photos))
       .catch(() => {})
-  }, [])
+  }, [password])
 
   useEffect(() => {
     const saved = sessionStorage.getItem(KEY)
@@ -48,6 +49,21 @@ export default function AdminPage() {
     })
     if (res.status === 204) setPhotos((prev) => prev.filter((p) => p.id !== id))
     else alert('Не удалось удалить')
+  }
+
+  async function setHidden(photo: GalleryPhoto, hidden: boolean) {
+    if (!password) return
+    const res = await fetch(`/api/photos/${photo.id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json', 'x-admin-password': password },
+      body: JSON.stringify({ hidden }),
+    })
+    if (!res.ok) {
+      alert('Не удалось изменить видимость')
+      return
+    }
+    const data = await res.json()
+    setPhotos((prev) => prev.map((p) => (p.id === photo.id ? { ...p, hiddenAt: data.hiddenAt } : p)))
   }
 
   async function downloadAll() {
@@ -101,19 +117,26 @@ export default function AdminPage() {
           {downloading ? 'собираю…' : 'Скачать всё (ZIP)'}
         </button>
       </header>
-      <p className="font-mono text-xs opacity-60">Всего фото: {photos.length}</p>
+      <p className="font-mono text-xs opacity-60">
+        Всего фото: {photos.length} · скрыто: {photos.filter((p) => p.hiddenAt).length}
+      </p>
       <div className="columns-2 gap-3 sm:columns-3">
         {photos.map((p) => (
-          <figure key={p.id} className="mb-3 break-inside-avoid bg-white p-2 shadow-sm">
+          <figure key={p.id} className={`mb-3 break-inside-avoid bg-white p-2 shadow-sm${p.hiddenAt ? ' opacity-50' : ''}`}>
             {p.thumbUrl && (
               /* eslint-disable-next-line @next/next/no-img-element */
               <img src={p.thumbUrl} alt={`Фото от ${p.name}`} loading="lazy" className="w-full" />
             )}
-            <figcaption className="flex items-center justify-between py-1 font-mono text-[10px]">
+            <figcaption className="flex items-center justify-between gap-2 py-1 font-mono text-[10px]">
               <span className="opacity-60">{p.name}</span>
-              <button onClick={() => remove(p.id)} className="text-wine underline underline-offset-2">
-                удалить
-              </button>
+              <span className="flex gap-2">
+                <button onClick={() => setHidden(p, !p.hiddenAt)} className="underline underline-offset-2">
+                  {p.hiddenAt ? 'вернуть' : 'скрыть'}
+                </button>
+                <button onClick={() => remove(p.id)} className="text-wine underline underline-offset-2">
+                  удалить
+                </button>
+              </span>
             </figcaption>
           </figure>
         ))}

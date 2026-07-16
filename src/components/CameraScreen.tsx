@@ -199,9 +199,14 @@ export default function CameraScreen({ guest, onGuestMissing }: { guest: Guest; 
       <footer className="space-y-3">
         {error && <p className="text-sm text-wine">{error}</p>}
         {used >= 1 && (
-          <Link href="/gallery" className="font-mono text-sm uppercase tracking-widest text-wine underline underline-offset-4">
-            Смотреть общий альбом →
-          </Link>
+          <div className="flex flex-col items-center gap-2">
+            <Link href="/gallery" className="font-mono text-sm uppercase tracking-widest text-wine underline underline-offset-4">
+              Смотреть общий альбом →
+            </Link>
+            <Link href="/my-photos" className="font-mono text-xs uppercase tracking-widest underline underline-offset-4">
+              Моя плёнка
+            </Link>
+          </div>
         )}
       </footer>
 

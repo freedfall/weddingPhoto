@@ -1,4 +1,5 @@
 import { addPhoto, GuestNotFoundError, LimitReachedError } from '@/lib/photo-service'
+import { isAdminRequest } from '@/lib/admin-auth'
 import { SignedUrlCache } from '@/lib/signed-url-cache'
 import { realPhotoDeps } from '@/lib/supabase-photo-deps'
 import { supabaseAdmin } from '@/lib/supabase-server'
@@ -37,14 +38,24 @@ type PhotoRow = {
   created_at: string
   width: number | null
   height: number | null
+  hidden_at: string | null
   guests: { name: string } | null
 }
 
-export async function GET() {
+export async function GET(req: Request) {
+  const { searchParams } = new URL(req.url)
+  const guestId = searchParams.get('guestId')
+  const includeHidden = searchParams.get('includeHidden') === '1'
+  if (guestId && !isValidGuestId(guestId)) return Response.json({ error: 'bad_guest_id' }, { status: 400 })
+  if (includeHidden && !isAdminRequest(req)) return Response.json({ error: 'unauthorized' }, { status: 401 })
+
   const sb = supabaseAdmin()
-  const { data, error } = await sb.from('photos')
-    .select('id, storage_path, thumb_path, created_at, width, height, guests(name)')
+  let query = sb.from('photos')
+    .select('id, storage_path, thumb_path, created_at, width, height, hidden_at, guests(name)')
     .order('created_at', { ascending: false })
+  if (guestId) query = query.eq('guest_id', guestId)
+  if (!includeHidden) query = query.is('hidden_at', null)
+  const { data, error } = await query
   if (error) return Response.json({ error: 'db_error' }, { status: 500 })
 
   const rows = (data ?? []) as unknown as PhotoRow[]
@@ -73,6 +84,7 @@ export async function GET() {
       height: p.height,
       thumbUrl: urlByPath.get(p.thumb_path) ?? null,
       fullUrl: urlByPath.get(p.storage_path) ?? null,
+      hiddenAt: p.hidden_at,
     })))
 }
 

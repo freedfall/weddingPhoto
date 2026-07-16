@@ -11,6 +11,7 @@ create table if not exists photos (
   thumb_path text not null,
   width int,
   height int,
+  hidden_at timestamptz,
   created_at timestamptz not null default now()
 );
 
