@@ -34,14 +34,14 @@ export default function GalleryGrid({ photos }: { photos: GalleryPhoto[] }) {
 
   return (
     <>
-      <div className="columns-2 gap-3 sm:columns-3">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
         {photos.map((p, i) => {
           const tilt = photoTilt(p.id)
           const isLoaded = loadedIds.has(p.id)
           return (
             <figure
               key={p.id}
-              className="card-in mb-3 break-inside-avoid bg-white p-2 pb-1 transition-transform active:scale-[0.98]"
+              className="card-in min-w-0 bg-white p-2 pb-1 transition-transform active:scale-[0.98]"
               style={
                 {
                   animationDelay: `${Math.min(i * 40, 400)}ms`,

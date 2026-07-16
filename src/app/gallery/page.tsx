@@ -95,9 +95,9 @@ export default function GalleryPage() {
 function GallerySkeleton() {
   const heights = ['h-36', 'h-48', 'h-40', 'h-52', 'h-44', 'h-36']
   return (
-    <div className="columns-2 gap-3 sm:columns-3">
+    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
       {heights.map((h, i) => (
-        <div key={i} className="skeleton mb-3 break-inside-avoid bg-white p-2 pb-1 shadow-sm" style={{ animationDelay: `${i * 120}ms` }}>
+        <div key={i} className="skeleton bg-white p-2 pb-1 shadow-sm" style={{ animationDelay: `${i * 120}ms` }}>
           <div className={`${h} w-full bg-line/60`} />
           <div className="my-1.5 h-2 w-1/2 bg-line/60" />
         </div>
