@@ -41,7 +41,7 @@ export default function GalleryGrid({ photos }: { photos: GalleryPhoto[] }) {
           return (
             <figure
               key={p.id}
-              className="card-in min-w-0 bg-white p-2 pb-1 transition-transform active:scale-[0.98]"
+              className="card-in min-w-0 self-start bg-white p-2 pb-1 transition-transform active:scale-[0.98]"
               style={
                 {
                   animationDelay: `${Math.min(i * 40, 400)}ms`,

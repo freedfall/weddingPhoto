@@ -97,7 +97,7 @@ function GallerySkeleton() {
   return (
     <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
       {heights.map((h, i) => (
-        <div key={i} className="skeleton bg-white p-2 pb-1 shadow-sm" style={{ animationDelay: `${i * 120}ms` }}>
+        <div key={i} className="skeleton self-start bg-white p-2 pb-1 shadow-sm" style={{ animationDelay: `${i * 120}ms` }}>
           <div className={`${h} w-full bg-line/60`} />
           <div className="my-1.5 h-2 w-1/2 bg-line/60" />
         </div>
