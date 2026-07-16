@@ -7,7 +7,7 @@ import { Guest, saveUsedCache } from '@/lib/client/guest'
 import { uploadWithRetry } from '@/lib/client/upload'
 import { PHOTO_LIMIT } from '@/lib/validation'
 
-export default function CameraScreen({ guest }: { guest: Guest }) {
+export default function CameraScreen({ guest, onGuestMissing }: { guest: Guest; onGuestMissing: () => void }) {
   const [used, setUsed] = useState<number | null>(null)
   const [loadFailed, setLoadFailed] = useState(false)
   const [preview, setPreview] = useState<{ blob: Blob; url: string } | null>(null)
@@ -19,8 +19,15 @@ export default function CameraScreen({ guest }: { guest: Guest }) {
     setLoadFailed(false)
     setUsed(null)
     fetch(`/api/guests/${guest.id}`)
-      .then((r) => (r.ok ? r.json() : Promise.reject()))
+      .then((r) => {
+        if (r.status === 404) {
+          onGuestMissing()
+          return null
+        }
+        return r.ok ? r.json() : Promise.reject()
+      })
       .then((d) => {
+        if (!d) return
         setUsed(d.used)
         if (d.used >= 1) saveUsedCache(d.used)
       })

@@ -1,6 +1,7 @@
 export type Guest = { id: string; name: string }
 
 const KEY = 'wp_guest'
+const USED_KEY = 'wp_used'
 
 export function loadGuest(): Guest | null {
   try {
@@ -17,7 +18,14 @@ export function saveGuest(g: Guest): void {
   localStorage.setItem(KEY, JSON.stringify(g))
 }
 
-const USED_KEY = 'wp_used'
+export function clearGuest(): void {
+  try {
+    localStorage.removeItem(KEY)
+    localStorage.removeItem(USED_KEY)
+  } catch {
+    // Если хранилище недоступно, достаточно сбросить состояние приложения.
+  }
+}
 
 // Кэш счётчика кадров: галерея открывается мгновенно, без запроса к серверу.
 // Источник правды — сервер; кэш обновляется камерой при каждой загрузке фото.
