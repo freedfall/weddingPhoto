@@ -80,32 +80,51 @@ export default function GalleryPage() {
 
   return (
     <div className="space-y-5">
-      <header className="space-y-3">
-        <div className="flex items-baseline justify-between gap-3">
-          <h1 className="font-serif text-3xl font-semibold text-wine">Общий альбом</h1>
-          <div className="flex gap-3 font-mono text-xs uppercase tracking-widest underline underline-offset-4">
-            <Link href="/my-photos">моя плёнка</Link>
-            <Link href="/">к камере</Link>
+      <header className="space-y-4">
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-sepia">wedding film · live</p>
+            <h1 className="font-serif text-4xl font-semibold leading-none text-wine">Общий альбом</h1>
           </div>
-        </div>
-        <div className="perf-strip opacity-30" aria-hidden />
-      </header>
-      {loaded && photos.length > 0 && (
-        <div className="flex justify-center gap-2 font-mono text-[11px] uppercase tracking-widest">
-          <button
-            onClick={() => setView('grid')}
-            className={view === 'grid' ? 'border-b border-wine pb-1 text-wine' : 'pb-1 opacity-50'}
+          <Link
+            href="/"
+            className="mt-1 rounded-full border border-ink/15 bg-white/60 px-4 py-2 font-mono text-xs uppercase tracking-wide transition-transform active:scale-95"
           >
-            Сетка
-          </button>
-          <button
-            onClick={() => setView('timeline')}
-            className={view === 'timeline' ? 'border-b border-wine pb-1 text-wine' : 'pb-1 opacity-50'}
+            ← камера
+          </Link>
+        </div>
+        <div className="flex items-center justify-between rounded-2xl border border-ink/10 bg-white/55 p-1.5">
+          <span className="px-3 font-mono text-xs uppercase tracking-wide text-ink/55">Все кадры</span>
+          <Link
+            href="/my-photos"
+            className="rounded-xl bg-ink px-4 py-2 font-mono text-xs uppercase tracking-wide text-paper transition-transform active:scale-95"
+          >
+            Моя плёнка →
+          </Link>
+        </div>
+        {loaded && photos.length > 0 && (
+          <div className="mx-auto flex w-fit rounded-2xl bg-ink/[0.06] p-1.5 font-mono text-sm uppercase tracking-wide">
+            <button
+              onClick={() => setView('grid')}
+              className={`rounded-xl px-5 py-2.5 transition-colors ${
+                view === 'grid' ? 'bg-paper text-wine shadow-sm' : 'text-ink/45'
+              }`}
+              aria-pressed={view === 'grid'}
+            >
+              Сетка
+            </button>
+            <button
+              onClick={() => setView('timeline')}
+              className={`rounded-xl px-5 py-2.5 transition-colors ${
+                view === 'timeline' ? 'bg-paper text-wine shadow-sm' : 'text-ink/45'
+              }`}
+              aria-pressed={view === 'timeline'}
           >
             Лента
           </button>
-        </div>
-      )}
+          </div>
+        )}
+      </header>
       {loaded ? (view === 'grid' ? <GalleryGrid photos={photos} /> : <GalleryTimeline photos={photos} />) : <GallerySkeleton />}
     </div>
   )

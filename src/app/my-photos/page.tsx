@@ -37,17 +37,28 @@ export default function MyPhotosPage() {
 
   return (
     <div className="space-y-5">
-      <header className="space-y-3">
-        <div className="flex items-baseline justify-between gap-3">
+      <header className="space-y-4">
+        <div className="flex items-start justify-between gap-3">
           <div>
-            <p className="font-mono text-[11px] uppercase tracking-widest opacity-50">твоя плёнка</p>
-            <h1 className="font-serif text-3xl font-semibold text-wine">{name}</h1>
+            <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-sepia">твоя плёнка</p>
+            <h1 className="font-serif text-4xl font-semibold leading-none text-wine">{name}</h1>
           </div>
-          <Link href="/gallery" className="font-mono text-xs uppercase tracking-widest underline underline-offset-4">
-            общий альбом
+          <Link
+            href="/"
+            className="mt-1 rounded-full border border-ink/15 bg-white/60 px-4 py-2 font-mono text-xs uppercase tracking-wide transition-transform active:scale-95"
+          >
+            ← камера
           </Link>
         </div>
-        <div className="perf-strip opacity-30" aria-hidden />
+        <div className="flex items-center justify-between rounded-2xl border border-ink/10 bg-white/55 p-1.5">
+          <span className="px-3 font-mono text-xs uppercase tracking-wide text-ink/55">Твои кадры</span>
+          <Link
+            href="/gallery"
+            className="rounded-xl bg-ink px-4 py-2 font-mono text-xs uppercase tracking-wide text-paper transition-transform active:scale-95"
+          >
+            Общий альбом →
+          </Link>
+        </div>
       </header>
       {photos.length ? <GalleryGrid photos={photos} /> : <p className="py-16 text-center font-serif text-xl">Твоя плёнка пока ждёт первого кадра</p>}
     </div>
