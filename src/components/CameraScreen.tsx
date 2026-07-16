@@ -97,17 +97,17 @@ export default function CameraScreen({ guest, onGuestMissing }: { guest: Guest; 
 
   return (
     <div className="flex min-h-[85dvh] flex-col items-center justify-between py-4 text-center">
-      <header className="space-y-1">
-        <p className="font-serif text-2xl font-medium">Привет, {guest.name}!</p>
-        <div className="mx-auto mt-3 inline-block overflow-hidden rounded-md bg-ink px-4 shadow-sm">
+      <header className="space-y-2">
+        <p className="font-serif text-3xl font-medium sm:text-4xl">Привет, {guest.name}!</p>
+        <div className="mx-auto mt-3 inline-block overflow-hidden rounded-md bg-ink px-5 shadow-sm">
           <div className="perf-strip perf-strip--paper opacity-40" aria-hidden />
-          <span key={left} className="counter-roll block py-1 font-mono text-2xl tabular-nums text-paper">
+          <span key={left} className="counter-roll block py-1.5 font-mono text-3xl tabular-nums text-paper sm:text-4xl">
             {String(left).padStart(2, '0')}
             <span className="text-paper/50">/{PHOTO_LIMIT}</span>
           </span>
           <div className="perf-strip perf-strip--paper opacity-40" aria-hidden />
         </div>
-        <p className="font-mono text-[11px] uppercase tracking-widest opacity-50">кадров осталось</p>
+        <p className="font-mono text-xs uppercase tracking-[0.18em] opacity-50">кадров осталось</p>
       </header>
 
       {done ? (
@@ -146,14 +146,14 @@ export default function CameraScreen({ guest, onGuestMissing }: { guest: Guest; 
             <button
               onClick={keep}
               disabled={sending}
-              className="rounded-full bg-wine px-6 py-3 font-mono text-sm uppercase tracking-widest text-paper transition-transform active:scale-95 disabled:opacity-40"
+              className="rounded-full bg-wine px-7 py-3.5 font-mono text-base uppercase tracking-widest text-paper transition-transform active:scale-95 disabled:opacity-40"
             >
               {sending ? 'отправляется…' : 'Оставить'}
             </button>
             <button
               onClick={discardPreview}
               disabled={sending}
-              className="rounded-full border border-ink/30 px-6 py-3 font-mono text-sm uppercase tracking-widest transition-transform active:scale-95 disabled:opacity-40"
+              className="rounded-full border border-ink/30 px-7 py-3.5 font-mono text-base uppercase tracking-widest transition-transform active:scale-95 disabled:opacity-40"
             >
               Переснять
             </button>
@@ -165,7 +165,7 @@ export default function CameraScreen({ guest, onGuestMissing }: { guest: Guest; 
           )}
         </div>
       ) : (
-        <div className="relative grid size-28 place-items-center">
+        <div className="relative grid size-32 place-items-center">
           <svg
             className="pointer-events-none absolute inset-0 size-full -rotate-90"
             viewBox="0 0 100 100"
@@ -189,23 +189,32 @@ export default function CameraScreen({ guest, onGuestMissing }: { guest: Guest; 
           <button
             onClick={() => inputRef.current?.click()}
             aria-label="Сделать снимок"
-            className="group relative z-10 grid size-24 place-items-center rounded-full border-4 border-wine/30 transition-transform active:scale-90"
+            className="group relative z-10 grid size-28 place-items-center rounded-full border-4 border-wine/30 transition-transform active:scale-90"
           >
-            <span className="block size-16 rounded-full bg-wine transition-transform group-active:scale-90" />
+            <span className="block size-20 rounded-full bg-wine transition-transform group-active:scale-90" />
           </button>
         </div>
       )}
 
-      <footer className="space-y-3">
-        {error && <p className="text-sm text-wine">{error}</p>}
+      <footer className="w-full space-y-3">
+        {error && <p className="text-base text-wine">{error}</p>}
         {used >= 1 && (
-          <div className="flex flex-col items-center gap-2">
-            <Link href="/gallery" className="font-mono text-sm uppercase tracking-widest text-wine underline underline-offset-4">
-              Смотреть общий альбом →
-            </Link>
-            <Link href="/my-photos" className="font-mono text-xs uppercase tracking-widest underline underline-offset-4">
-              Моя плёнка
-            </Link>
+          <div className="mx-auto max-w-sm space-y-2">
+            <p className="font-mono text-[11px] uppercase tracking-[0.16em] opacity-45">кадры уже в альбоме</p>
+            <div className="grid grid-cols-2 gap-2">
+              <Link
+                href="/gallery"
+                className="flex min-h-12 items-center justify-center rounded-2xl bg-wine px-3 font-mono text-xs uppercase tracking-wide text-paper transition-transform active:scale-[0.98]"
+              >
+                Общий альбом <span className="ml-1 text-base leading-none" aria-hidden>↗</span>
+              </Link>
+              <Link
+                href="/my-photos"
+                className="flex min-h-12 items-center justify-center rounded-2xl border border-ink/15 bg-white/60 px-3 font-mono text-xs uppercase tracking-wide transition-transform active:scale-[0.98]"
+              >
+                Моя плёнка
+              </Link>
+            </div>
           </div>
         )}
       </footer>
